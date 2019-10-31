@@ -71,7 +71,7 @@ app.layout = html.Div(children=[
                 dcc.Dropdown(
                     id='stats-drop',
                     options=[{'label': i, 'value': i} for i in varlist],
-                    value='Price'
+                    value='PRICE'
                 ),
         ], className='three columns'),
         # right side
@@ -89,7 +89,39 @@ app.layout = html.Div(children=[
 )
 
 ############ Callbacks
+@app.callback (Output('dc-map','figure'),
+            [Input('stats-drop','value')])
+def vars_selection (arg):
+    fig = go.Figure(go.Scattermapbox(
+            lat=df['LATITUDE'],
+            lon=df['LONGITUDE'],
+            mode='markers',
+            marker=go.scattermapbox.Marker(
+                size=9,
+                colorscale='Reds',
+                color=df[arg]
+            ),
+            text=df[arg]
+            #text=df['ASSESSMENT_SUBNBHD']
 
+        ))
+
+    fig.update_layout(
+        autosize=True,
+        hovermode='closest',
+        mapbox=go.layout.Mapbox(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            center=go.layout.mapbox.Center(
+                lat=38.92,
+                lon=-77.07
+            ),
+            pitch=0,
+            zoom=10
+        ),
+    )
+    #df['BATHRM', 'HF_BATHRM', 'ROOMS', 'BEDRM', 'STORIES',  'PRICE']
+    return fig
 
 
 ############ Deploy
